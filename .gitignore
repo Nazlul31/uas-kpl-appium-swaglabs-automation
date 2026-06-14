@@ -1,0 +1,45 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile application binary (do not commit APK files)
+/app/*.apk
+
+# Mobile test reports and screenshot outputs
+/target/
+/test-output/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.metadata/
+.classpath
+.project
+.settings/
+bin/
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# Maven
+report.xml
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.nextValves
+release.properties
+dependency-reduced-pom.xml
