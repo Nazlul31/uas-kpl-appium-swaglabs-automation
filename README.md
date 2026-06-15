@@ -1,6 +1,6 @@
 # SwagLabs Mobile Automation Testing (Android)
 
-Proyek ini dibangun untuk memenuhi tugas **Ujian Akhir Semester (UAS) mata kuliah Kualitas Perangkat Lunak**. Proyek ini mendemonstrasikan implementasi *Automation Testing* tingkat profesional untuk aplikasi mobile menggunakan **Appium 2.x**, **Java**, **Maven**, dan **TestNG** dengan pola desain **Page Object Model (POM)**.
+Proyek ini dibangun untuk memenuhi tugas **Ujian Akhir Semester (UAS) mata kuliah Kualitas Perangkat Lunak**. Proyek ini mendemonstrasikan implementasi *Automation Testing* untuk aplikasi mobile menggunakan **Appium 2.x**, **Java**, **Maven**, dan **TestNG** dengan pola desain **Page Object Model (POM)**.
 
 ---
 
