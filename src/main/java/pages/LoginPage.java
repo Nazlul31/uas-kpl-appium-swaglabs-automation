@@ -1,12 +1,12 @@
 package pages;
 
-import io.appium.java-client.android.AndroidDriver;
-import io.appium.java-client.pagefactory.AndroidFindBy;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.pagefactory.AndroidFindBy;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import io.appium.java-client.AppiumBy;
+import io.appium.java_client.AppiumBy;
 import java.time.Duration;
 
 public class LoginPage {
@@ -35,7 +35,15 @@ public class LoginPage {
         try {
             return wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).isDisplayed();
         } catch (Exception e) {
-            return false;
+            // Attempt to dismiss potential biometric prompt if username field is blocked
+            try {
+                System.out.println("----- LoginPage: Username not visible, attempting to dismiss biometric dialog -----");
+                driver.navigate().back();
+                Thread.sleep(1200); // Wait for screen to settle
+                return wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).isDisplayed();
+            } catch (Exception ex) {
+                return false;
+            }
         }
     }
 
@@ -78,8 +86,8 @@ public class LoginPage {
     public String getErrorMessage() {
         try {
             // Wait for the container to be visible
-            wait.until(ExpectedConditions.visibilityOfElementLocated(errorContainer));
-            return driver.findElement(errorMessageText).getText();
+            WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(errorContainer));
+            return container.findElement(AppiumBy.className("android.widget.TextView")).getText();
         } catch (Exception e) {
             return "";
         }

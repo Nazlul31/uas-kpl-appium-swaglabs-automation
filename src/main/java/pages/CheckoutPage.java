@@ -1,11 +1,11 @@
 package pages;
 
-import io.appium.java-client.android.AndroidDriver;
+import io.appium.java_client.android.AndroidDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import io.appium.java-client.AppiumBy;
+import io.appium.java_client.AppiumBy;
 import java.time.Duration;
 
 public class CheckoutPage {
@@ -26,8 +26,11 @@ public class CheckoutPage {
     private By finishButton = AppiumBy.accessibilityId("test-FINISH");
 
     // Order Success Elements
-    private By successHeader = AppiumBy.xpath("//android.widget.TextView[@text='CHECKOUT: COMPLETE!']");
-    private By successMessage = AppiumBy.xpath("//android.widget.TextView[@text='THANK YOU FOR YOUR ORDER']");
+    private By successHeader = AppiumBy.xpath("//android.widget.TextView[contains(@text, 'COMPLETE')]");
+    private By successMessage = AppiumBy.xpath("//android.widget.TextView[contains(@text, 'THANK YOU')]");
+
+    // Checkout Overview Page Header
+    private By checkoutOverviewHeader = AppiumBy.xpath("//android.widget.TextView[contains(@text, 'OVERVIEW')]");
 
     public CheckoutPage(AndroidDriver driver) {
         this.driver = driver;
@@ -84,6 +87,17 @@ public class CheckoutPage {
     // Click Finish to place order
     public CheckoutPage clickFinish() {
         // We will make sure we scroll to/locate the finish button and click it
+        try {
+            // Wait for the overview page to load first
+            wait.until(ExpectedConditions.visibilityOfElementLocated(checkoutOverviewHeader));
+            
+            // Scroll to the finish button
+            driver.findElement(AppiumBy.androidUIAutomator(
+                "new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().description(\"test-FINISH\"))"
+            ));
+        } catch (Exception e) {
+            System.out.println("Scrolling to Finish button failed/not scrollable: " + e.getMessage());
+        }
         wait.until(ExpectedConditions.elementToBeClickable(finishButton)).click();
         return this;
     }

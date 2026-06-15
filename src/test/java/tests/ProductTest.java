@@ -10,15 +10,22 @@ public class ProductTest extends BaseTest {
 
     @Test(priority = 1)
     public void testProductDisplayVerification_TC003() {
+        System.out.println("----- TC003: Start Product Display Verification Test -----");
         LoginPage loginPage = new LoginPage(driver);
         
-        // Log in to access the products page
+        System.out.println("TC003 - Step 1: Logging in with valid credentials...");
         ProductPage productPage = loginPage.login("standard_user", "secret_sauce");
+        System.out.println("TC003 - Step 2: Login method completed.");
 
-        // Verify we are on the Product Page
-        Assert.assertTrue(productPage.isProductPageDisplayed(), "Product Page header is not displayed.");
+        System.out.println("TC003 - Step 3: Verifying Product Page is displayed...");
+        boolean isHeaderDisplayed = productPage.isProductPageDisplayed();
+        System.out.println("TC003 - Step 3: Product Page Header Displayed = " + isHeaderDisplayed);
+        Assert.assertTrue(isHeaderDisplayed, "Product Page header is not displayed.");
 
-        // Verify the product list items container is present
-        Assert.assertTrue(productPage.isProductListDisplayed(), "Product list items container is not displayed.");
+        System.out.println("TC003 - Step 4: Verifying Product List is displayed...");
+        boolean isListDisplayed = productPage.isProductListDisplayed();
+        System.out.println("TC003 - Step 4: Product List Displayed = " + isListDisplayed);
+        Assert.assertTrue(isListDisplayed, "Product list items container is not displayed.");
+        System.out.println("----- TC003: Test Completed Successfully -----");
     }
 }

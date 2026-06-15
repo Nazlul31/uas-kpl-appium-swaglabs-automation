@@ -32,10 +32,20 @@
             <version>${appium.java.client.version}</version>
         </dependency>
 
-        <!-- Selenium Java (Appium is built on top of Selenium) -->
+        <!-- Explicit Selenium dependencies to override transitives -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
+            <artifactId>selenium-api</artifactId>
+            <version>${selenium.java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-remote-driver</artifactId>
+            <version>${selenium.java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-support</artifactId>
             <version>${selenium.java.version}</version>
         </dependency>
 

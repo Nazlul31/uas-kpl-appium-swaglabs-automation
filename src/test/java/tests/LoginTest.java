@@ -10,34 +10,36 @@ public class LoginTest extends BaseTest {
 
     @Test(priority = 1)
     public void testFailedLogin_TC002() {
+        System.out.println("----- TC002: Start Failed Login Test -----");
         LoginPage loginPage = new LoginPage(driver);
         
-        // Ensure we are on the login screen
+        System.out.println("TC002 - Step 1: Verifying LoginPage is displayed...");
         Assert.assertTrue(loginPage.isLoginPageDisplayed(), "Login page is not displayed");
 
-        // Attempt login with incorrect credentials
+        System.out.println("TC002 - Step 2: Attempting login with incorrect credentials...");
         loginPage.enterUsername("standard_user")
                  .enterPassword("wrong_sauce")
                  .clickLoginFailed();
 
-        // Validate error message
+        System.out.println("TC002 - Step 3: Validating error message display...");
         String expectedError = "Username and password do not match any user in this service.";
         String actualError = loginPage.getErrorMessage();
         
-        // Assert error matches expected string (flexible match containing primary keyword)
         Assert.assertTrue(actualError.contains("do not match"), 
             "Error message validation failed. Expected containing 'do not match', but got: " + actualError);
+        System.out.println("----- TC002: Test Completed Successfully -----");
     }
 
     @Test(priority = 2)
     public void testSuccessfulLogin_TC001() {
+        System.out.println("----- TC001: Start Successful Login Test -----");
         LoginPage loginPage = new LoginPage(driver);
         
-        // Login with valid credentials
-        // LoginPage.login returns a new instance of ProductPage (Page Chaining)
+        System.out.println("TC001 - Step 1: Logging in with valid credentials...");
         ProductPage productPage = loginPage.login("standard_user", "secret_sauce");
 
-        // Verify successful redirection to Product List page
+        System.out.println("TC001 - Step 2: Verifying redirection to Product Page...");
         Assert.assertTrue(productPage.isProductPageDisplayed(), "Successful login failed, Product Page not displayed");
+        System.out.println("----- TC001: Test Completed Successfully -----");
     }
 }
