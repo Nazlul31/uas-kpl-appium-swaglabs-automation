@@ -7,9 +7,6 @@
 # BlueJ files
 *.ctxt
 
-# Mobile application binary (do not commit APK files)
-/app/*.apk
-
 # Mobile test reports and screenshot outputs
 /target/
 /test-output/
