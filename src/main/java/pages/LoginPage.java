@@ -41,7 +41,7 @@ public class LoginPage {
             try {
                 System.out.println("----- LoginPage: Username not visible, attempting to dismiss biometric dialog -----");
                 driver.navigate().back();
-                Thread.sleep(1200); // Wait for screen to settle
+                Thread.sleep(200); // Wait for screen to settle
                 return wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).isDisplayed();
             } catch (Exception ex) {
                 return false;
@@ -52,15 +52,16 @@ public class LoginPage {
     // Input Username
     public LoginPage enterUsername(String username) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField));
-        element.clear();
-        element.sendKeys(username);
+        String currentVal = element.getText();
+        if (currentVal == null || !currentVal.equals(username)) {
+            element.sendKeys(username);
+        }
         return this;
     }
 
     // Input Password
     public LoginPage enterPassword(String password) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
-        element.clear();
         element.sendKeys(password);
         return this;
     }
@@ -88,9 +89,7 @@ public class LoginPage {
     // Get error message text
     public String getErrorMessage() {
         try {
-            // Wait for the container to be visible
-            WebElement container = wait.until(ExpectedConditions.visibilityOfElementLocated(errorContainer));
-            return container.findElement(AppiumBy.className("android.widget.TextView")).getText();
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessageText)).getText();
         } catch (Exception e) {
             return "";
         }

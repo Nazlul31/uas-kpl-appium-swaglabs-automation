@@ -45,7 +45,9 @@ public class BaseTest {
             options.setCapability("appium:appWaitPackage", "com.swaglabsmobileapp,com.android.systemui,com.google.android.systemui");
             options.setCapability("appium:replaceElementValue", true); // Fast instant typing
             options.setCapability("appium:noReset", true); // Fast startup by reusing installed app
-            options.setCapability("appium:waitForIdleTimeout", 100);
+            options.setCapability("appium:waitForIdleTimeout", 0);
+            options.setCapability("appium:disableWindowAnimation", true);
+            options.setCapability("appium:ignoreUnimportantViews", true);
             options.setCapability("appium:unicodeKeyboard", false);
             options.setCapability("appium:resetKeyboard", false);
 
@@ -55,20 +57,12 @@ public class BaseTest {
             // Explicitly activate the app in case noReset:true skipped launching it
             try {
                 driver.activateApp("com.swaglabsmobileapp");
-                Thread.sleep(1500);
             } catch (Exception e) {
                 System.out.println("Failed to activate app on start: " + e.getMessage());
             }
         } else {
-            System.out.println("----- Reusing Shared Appium Session - Restarting App -----");
-            try {
-                driver.terminateApp("com.swaglabsmobileapp");
-                Thread.sleep(1200);
-                driver.activateApp("com.swaglabsmobileapp");
-                Thread.sleep(1800); // Allow app to settle
-            } catch (Exception e) {
-                System.out.println("Failed to restart app: " + e.getMessage());
-            }
+            System.out.println("----- Reusing Shared Appium Session - Performing Fast Reset -----");
+            resetAppToHomeOrLogin();
         }
 
         // Configure implicit wait (0 seconds)
@@ -76,6 +70,35 @@ public class BaseTest {
 
         // Check and handle logout/biometrics on startup/restart
         handleAppStartupState();
+    }
+
+    private void resetAppToHomeOrLogin() {
+        try {
+            long startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < 4000) {
+                boolean usernameVisible = !driver.findElements(AppiumBy.accessibilityId("test-Username")).isEmpty();
+                boolean menuVisible = !driver.findElements(AppiumBy.accessibilityId("test-Menu")).isEmpty();
+                if (usernameVisible || menuVisible) {
+                    break;
+                }
+                var backHome = driver.findElements(AppiumBy.accessibilityId("test-BACK HOME"));
+                if (!backHome.isEmpty()) {
+                    backHome.get(0).click();
+                    Thread.sleep(100);
+                    continue;
+                }
+                var backHomeText = driver.findElements(AppiumBy.xpath("//android.widget.TextView[contains(@text, 'BACK HOME')]"));
+                if (!backHomeText.isEmpty()) {
+                    backHomeText.get(0).click();
+                    Thread.sleep(100);
+                    continue;
+                }
+                driver.navigate().back();
+                Thread.sleep(100);
+            }
+        } catch (Exception e) {
+            System.out.println("Error during fast reset: " + e.getMessage());
+        }
     }
 
     private void handleAppStartupState() {
@@ -96,7 +119,7 @@ public class BaseTest {
             if (!mainUiVisible) {
                 System.out.println("----- Main UI blocked. Dismissing potential biometric overlay -----");
                 driver.navigate().back();
-                Thread.sleep(1000);
+                Thread.sleep(300);
             }
             
             // Re-verify login state after overlay handling
@@ -109,7 +132,7 @@ public class BaseTest {
                 
                 WebDriverWait logoutWait = new WebDriverWait(driver, Duration.ofSeconds(5));
                 logoutWait.until(ExpectedConditions.elementToBeClickable(AppiumBy.accessibilityId("test-LOGOUT"))).click();
-                Thread.sleep(2500); // Allow logout transition
+                logoutWait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.accessibilityId("test-Username"))); // Allow logout transition
             } else if (usernameVisible) {
                 System.out.println("----- App is on Login Page and ready -----");
             } else {

@@ -50,11 +50,9 @@ public class CheckoutPage {
     public CheckoutPage enterFirstName(String firstName) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
         try {
-            element.clear();
             element.sendKeys(firstName);
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
-            element.clear();
             element.sendKeys(firstName);
         }
         return this;
@@ -64,11 +62,9 @@ public class CheckoutPage {
     public CheckoutPage enterLastName(String lastName) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
         try {
-            element.clear();
             element.sendKeys(lastName);
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
-            element.clear();
             element.sendKeys(lastName);
         }
         return this;
@@ -78,11 +74,9 @@ public class CheckoutPage {
     public CheckoutPage enterPostalCode(String postalCode) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(postalCodeField));
         try {
-            element.clear();
             element.sendKeys(postalCode);
         } catch (org.openqa.selenium.StaleElementReferenceException e) {
             element = wait.until(ExpectedConditions.visibilityOfElementLocated(postalCodeField));
-            element.clear();
             element.sendKeys(postalCode);
         }
         return this;
