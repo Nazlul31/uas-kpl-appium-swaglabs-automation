@@ -43,6 +43,7 @@ public class BaseTest {
             options.setNewCommandTimeout(Duration.ofSeconds(60));
             options.setAppWaitActivity("*");
             options.setCapability("appium:appWaitPackage", "com.swaglabsmobileapp,com.android.systemui,com.google.android.systemui");
+            options.setCapability("appium:replaceElementValue", true); // Fast instant typing
             options.setCapability("appium:noReset", true); // Fast startup by reusing installed app
             options.setCapability("appium:waitForIdleTimeout", 100);
             options.setCapability("appium:unicodeKeyboard", false);
@@ -50,6 +51,14 @@ public class BaseTest {
 
             URL url = URI.create(appiumUrl).toURL();
             driver = new AndroidDriver(url, options);
+            
+            // Explicitly activate the app in case noReset:true skipped launching it
+            try {
+                driver.activateApp("com.swaglabsmobileapp");
+                Thread.sleep(1500);
+            } catch (Exception e) {
+                System.out.println("Failed to activate app on start: " + e.getMessage());
+            }
         } else {
             System.out.println("----- Reusing Shared Appium Session - Restarting App -----");
             try {
@@ -72,50 +81,39 @@ public class BaseTest {
     private void handleAppStartupState() {
         System.out.println("----- Synchronizing App State on Startup/Restart -----");
         try {
-            WebDriverWait startupWait = new WebDriverWait(driver, Duration.ofSeconds(4));
-            
-            // 1. Check if we are on the Product Page (already logged in)
-            boolean loggedIn = false;
-            try {
-                startupWait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.accessibilityId("test-Menu")));
-                loggedIn = true;
-            } catch (Exception e) {
-                // Not on Product Page immediately
+            boolean mainUiVisible = false;
+            long startTime = System.currentTimeMillis();
+            while (System.currentTimeMillis() - startTime < 3000) {
+                boolean usernameVisible = !driver.findElements(AppiumBy.accessibilityId("test-Username")).isEmpty();
+                boolean menuVisible = !driver.findElements(AppiumBy.accessibilityId("test-Menu")).isEmpty();
+                if (usernameVisible || menuVisible) {
+                    mainUiVisible = true;
+                    break;
+                }
+                Thread.sleep(200);
             }
             
-            if (loggedIn) {
+            if (!mainUiVisible) {
+                System.out.println("----- Main UI blocked. Dismissing potential biometric overlay -----");
+                driver.navigate().back();
+                Thread.sleep(1000);
+            }
+            
+            // Re-verify login state after overlay handling
+            boolean menuVisible = !driver.findElements(AppiumBy.accessibilityId("test-Menu")).isEmpty();
+            boolean usernameVisible = !driver.findElements(AppiumBy.accessibilityId("test-Username")).isEmpty();
+            
+            if (menuVisible) {
                 System.out.println("----- Already logged in. Performing auto-logout to ensure clean state -----");
                 driver.findElement(AppiumBy.accessibilityId("test-Menu")).click();
                 
                 WebDriverWait logoutWait = new WebDriverWait(driver, Duration.ofSeconds(5));
                 logoutWait.until(ExpectedConditions.elementToBeClickable(AppiumBy.accessibilityId("test-LOGOUT"))).click();
                 Thread.sleep(2500); // Allow logout transition
-                return;
-            }
-            
-            // 2. Check if we are on the Login Page.
-            boolean loginPageVisible = false;
-            try {
-                startupWait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.accessibilityId("test-Username")));
-                loginPageVisible = true;
-            } catch (Exception e) {
-                // Login page not visible
-            }
-            
-            if (!loginPageVisible) {
-                System.out.println("----- Login page not visible. Dismissing potential biometric overlay -----");
-                driver.navigate().back();
-                Thread.sleep(1500);
-                
-                // Confirm login page is now visible
-                try {
-                    startupWait.until(ExpectedConditions.visibilityOfElementLocated(AppiumBy.accessibilityId("test-Username")));
-                    System.out.println("----- Login page is now visible after back navigation -----");
-                } catch (Exception e) {
-                    System.out.println("----- Warning: Login page still not visible -----");
-                }
+            } else if (usernameVisible) {
+                System.out.println("----- App is on Login Page and ready -----");
             } else {
-                System.out.println("----- Login page is visible -----");
+                System.out.println("----- Warning: Neither Login Page nor Menu visible -----");
             }
             
         } catch (Exception e) {

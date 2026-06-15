@@ -49,24 +49,42 @@ public class CheckoutPage {
     // Input first name
     public CheckoutPage enterFirstName(String firstName) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
-        element.clear();
-        element.sendKeys(firstName);
+        try {
+            element.clear();
+            element.sendKeys(firstName);
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            element = wait.until(ExpectedConditions.visibilityOfElementLocated(firstNameField));
+            element.clear();
+            element.sendKeys(firstName);
+        }
         return this;
     }
 
     // Input last name
     public CheckoutPage enterLastName(String lastName) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
-        element.clear();
-        element.sendKeys(lastName);
+        try {
+            element.clear();
+            element.sendKeys(lastName);
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            element = wait.until(ExpectedConditions.visibilityOfElementLocated(lastNameField));
+            element.clear();
+            element.sendKeys(lastName);
+        }
         return this;
     }
 
     // Input postal code
     public CheckoutPage enterPostalCode(String postalCode) {
         WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(postalCodeField));
-        element.clear();
-        element.sendKeys(postalCode);
+        try {
+            element.clear();
+            element.sendKeys(postalCode);
+        } catch (org.openqa.selenium.StaleElementReferenceException e) {
+            element = wait.until(ExpectedConditions.visibilityOfElementLocated(postalCodeField));
+            element.clear();
+            element.sendKeys(postalCode);
+        }
         return this;
     }
 

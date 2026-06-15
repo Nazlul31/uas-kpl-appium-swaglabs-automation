@@ -33,7 +33,9 @@ public class LoginPage {
     // Method to check if Login Page is displayed
     public boolean isLoginPageDisplayed() {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).isDisplayed();
+            // Use a short wait first to check if login page is immediately visible
+            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(2));
+            return shortWait.until(ExpectedConditions.visibilityOfElementLocated(usernameField)).isDisplayed();
         } catch (Exception e) {
             // Attempt to dismiss potential biometric prompt if username field is blocked
             try {
@@ -77,6 +79,7 @@ public class LoginPage {
 
     // Complete Login action helper (successful flow)
     public ProductPage login(String username, String password) {
+        isLoginPageDisplayed(); // Ensure login page is visible and biometric overlays are dismissed
         enterUsername(username);
         enterPassword(password);
         return clickLoginSuccess();
